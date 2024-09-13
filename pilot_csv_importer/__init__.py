@@ -33,7 +33,7 @@ class PilotCSVImporter:
             name="pilot-csv-importer-csv-file-path",
             label=self._rhapi.__("CSV File Path"),
             field_type=UIFieldType.TEXT,
-            desc=self._rhapi.__("CSV file MUST contain [name], [callsign], [group] and [heat] fields. Recommend to place the CSV file here") + ": " + self.default_file_path,
+            desc=self._rhapi.__("CSV file MUST contain [name], [callsign] and [heat] fields. Recommend to place the CSV file here") + ": " + self.default_file_path,
             value=self.default_file_path,
             placeholder=self.default_file_path,
         )
