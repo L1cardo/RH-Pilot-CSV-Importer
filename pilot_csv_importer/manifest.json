@@ -1,0 +1,13 @@
+{
+    "name": "Pilot CSV Importer",
+    "author": "Licardo",
+    "author_uri": "https://space.bilibili.com/7403418",
+    "description": "Import Pilots from local CSV file",
+    "info_uri": "https://github.com/L1cardo/RH-Pilot-CSV-Importer/",
+    "license": "MIT",
+    "license_uri": "https://github.com/L1cardo/RH-Pilot-CSV-Importer/blob/main/LICENSE",
+    "version": "1.0.0",
+    "required_rhapi_version": "1.2",
+    "update_uri": null,
+    "text_domain": null
+}
