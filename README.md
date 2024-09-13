@@ -22,8 +22,8 @@ This plugin allows you to import pilots and generate heats from a CSV file in Ro
 ```bash
 cd ~
 sudo rm -r RotorHazard/src/server/plugins/pilot_csv_importer
-wget https://github.com/l1cardo/RH-Pilot-CSV-Importer/releases/latest/pilot_csv_importer.zip
-unzip pilot_csv_importer.zip
+wget https://github.com/l1cardo/RH-Pilot-CSV-Importer/releases/latest/download/pilot_csv_importer.zip
+unzip pilot_csv_importer.zip -d pilot_csv_importer
 cp -r pilot_csv_importer RotorHazard/src/server/plugins/
 rm -r pilot_csv_importer
 rm pilot_csv_importer.zip
