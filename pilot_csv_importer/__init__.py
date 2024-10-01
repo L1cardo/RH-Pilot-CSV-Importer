@@ -8,7 +8,7 @@ from collections import defaultdict
 
 class PilotCSVImporter:
     default_class_name = "Imported Class"
-    default_file_path = "/static/user/pilots.csv"
+    default_file_path = "./static/user/pilots.csv"
 
     def __init__(self, rhapi):
         self.logger = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ class PilotCSVImporter:
         fields.register_option(pilot_csv_importer_csv_file_path, "pilot-csv-importer")
 
     def import_pilot(self, args):
-        file_path = "." + os.path.abspath(self._rhapi.db.option("pilot-csv-importer-csv-file-path"))
+        file_path = os.path.abspath(self._rhapi.db.option("pilot-csv-importer-csv-file-path"))
         if os.path.isfile(file_path):
             heats = defaultdict(list)
             with open(file_path, mode="r", encoding="utf-8") as csvfile:
