@@ -1,8 +1,9 @@
 import csv
 import os
 import logging
+import urllib.request
 from eventmanager import Evt
-from RHUI import UIField, UIFieldType
+from RHUI import UIField, UIFieldType, UIFieldSelectOption
 from Database import ProgramMethod
 from collections import defaultdict
 
@@ -29,20 +30,56 @@ class PilotCSVImporter:
             value=self.default_class_name,
             placeholder=self.default_class_name,
         )
+        pilot_csv_importer_type = UIField(
+            name="pilot-csv-importer-type",
+            label=self._rhapi.__("Type of Import"),
+            field_type=UIFieldType.SELECT,
+            options=[
+                UIFieldSelectOption(0, "From File"),
+                UIFieldSelectOption(1, "From ifpv.co.uk"),
+            ],
+        )
+        pilot_csv_importer_csv_event_id = UIField(
+            name="pilot-csv-importer-event-id",
+            label=self._rhapi.__("Event ID"),
+            field_type=UIFieldType.TEXT,
+            desc="Enter the event ID if downloading from one of the external providers"
+        )
         pilot_csv_importer_csv_file_path = UIField(
             name="pilot-csv-importer-csv-file-path",
             label=self._rhapi.__("CSV File Path"),
             field_type=UIFieldType.TEXT,
-            desc=self._rhapi.__("CSV file MUST contain [name], [callsign] and [heat] fields. Recommend to place the CSV file here") + ": " + self.default_file_path,
+            desc=self._rhapi.__("CSV file MUST contain [name], [callsign] and [heat] fields. Recommend to place the CSV file here") + ": " + self.default_file_path + " unused if using an external provider",
             value=self.default_file_path,
             placeholder=self.default_file_path,
         )
         fields = self._rhapi.fields
         fields.register_option(pilot_csv_importer_class_name, "pilot-csv-importer")
+        fields.register_option(pilot_csv_importer_type, "pilot-csv-importer")
+        fields.register_option(pilot_csv_importer_csv_event_id, "pilot-csv-importer")
         fields.register_option(pilot_csv_importer_csv_file_path, "pilot-csv-importer")
 
+
+    def ifpv_download(self, event_id):
+        self.download_csv("https://www.ifpv.co.uk/events/" + event_id + "/rh")
+    
+    def download_csv(self, url):
+        download_location = "./plugins/pilot_csv_importer/downloaded/piots.csv"
+
+        if os.path.isfile(download_location):
+            os.remove(download_location)
+            self.logger.info("Deleted: " + download_location)
+
+        self.logger.info("Attempting to download: " + url)
+        download_result = urllib.request.urlretrieve(url, download_location)
+        self.logger.info("Downloaded: " + str(download_result))
+
     def import_pilot(self, args):
-        file_path = os.path.abspath(self._rhapi.db.option("pilot-csv-importer-csv-file-path"))
+        if self._rhapi.db.option("pilot-csv-importer-type") == "1":
+            self.ifpv_download(self._rhapi.db.option("pilot-csv-importer-event-id"))
+            file_path = "./plugins/pilot_csv_importer/downloaded/piots.csv"
+        else:
+            file_path = os.path.abspath(self._rhapi.db.option("pilot-csv-importer-csv-file-path"))
         if os.path.isfile(file_path):
             heats = defaultdict(list)
             with open(file_path, mode="r", encoding="utf-8") as csvfile:
