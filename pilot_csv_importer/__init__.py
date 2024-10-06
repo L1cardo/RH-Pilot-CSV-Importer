@@ -115,7 +115,7 @@ class PilotCSVImporter:
 
             # Create heats and associate them with the race class and format
             for heat, pilot_ids in heats.items():
-                heat_name = self._rhapi.__("Heat") + heat
+                heat_name = self._rhapi.__("Heat ") + heat
                 new_heat = self._rhapi.db.heat_add(name=heat_name)
                 
                 # Associate the heat with the race class and format
