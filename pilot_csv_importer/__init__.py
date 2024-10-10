@@ -1,14 +1,15 @@
 import csv
 import os
 import logging
+import urllib.request
 from eventmanager import Evt
-from RHUI import UIField, UIFieldType
+from RHUI import UIField, UIFieldType, UIFieldSelectOption
 from Database import ProgramMethod
 from collections import defaultdict
 
 class PilotCSVImporter:
     default_class_name = "Imported Class"
-    default_file_path = "/static/user/pilots.csv"
+    default_file_path = "./static/user/pilots.csv"
 
     def __init__(self, rhapi):
         self.logger = logging.getLogger(__name__)
@@ -29,20 +30,54 @@ class PilotCSVImporter:
             value=self.default_class_name,
             placeholder=self.default_class_name,
         )
-        pilot_csv_importer_csv_file_path = UIField(
-            name="pilot-csv-importer-csv-file-path",
-            label=self._rhapi.__("CSV File Path"),
+        pilot_csv_importer_type = UIField(
+            name="pilot-csv-importer-type",
+            label=self._rhapi.__("Type of Import"),
+            field_type=UIFieldType.SELECT,
+            value=0,
+            options=[
+                UIFieldSelectOption(0, "From File"),
+                UIFieldSelectOption(1, "From ifpv.co.uk"),
+                UIFieldSelectOption(2, "From URL"),
+            ],
+        )
+        pilot_csv_importer_location = UIField(
+            name="pilot-csv-importer-location",
+            label=self._rhapi.__("CSV File Path / Event ID / URL"),
             field_type=UIFieldType.TEXT,
-            desc=self._rhapi.__("CSV file MUST contain [name], [callsign] and [heat] fields. Recommend to place the CSV file here") + ": " + self.default_file_path,
+            desc=self._rhapi.__("Source file MUST contain [name], [callsign] and [heat] fields."),
             value=self.default_file_path,
             placeholder=self.default_file_path,
         )
         fields = self._rhapi.fields
         fields.register_option(pilot_csv_importer_class_name, "pilot-csv-importer")
-        fields.register_option(pilot_csv_importer_csv_file_path, "pilot-csv-importer")
+        fields.register_option(pilot_csv_importer_type, "pilot-csv-importer")
+        fields.register_option(pilot_csv_importer_location, "pilot-csv-importer")
+
+
+    def ifpv_download(self, event_id):
+        self.download_csv("https://www.ifpv.co.uk/events/" + event_id + "/rh")
+    
+    def download_csv(self, url):
+        download_location = "./plugins/pilot_csv_importer/downloaded/pilots.csv"
+
+        if os.path.isfile(download_location):
+            os.remove(download_location)
+            self.logger.info("Deleted: " + download_location)
+
+        self.logger.info("Attempting to download: " + url)
+        download_result = urllib.request.urlretrieve(url, download_location)
+        self.logger.info("Downloaded: " + str(download_result))
 
     def import_pilot(self, args):
-        file_path = "." + os.path.abspath(self._rhapi.db.option("pilot-csv-importer-csv-file-path"))
+        if self._rhapi.db.option("pilot-csv-importer-type") == "1": # ifpv
+            self.ifpv_download(self._rhapi.db.option("pilot-csv-importer-location"))
+            file_path = "./plugins/pilot_csv_importer/downloaded/pilots.csv"
+        elif self._rhapi.db.option("pilot-csv-importer-type") == "2": # url
+            self.download_csv(self._rhapi.db.option("pilot-csv-importer-location"))
+            file_path = "./plugins/pilot_csv_importer/downloaded/pilots.csv"
+        else:
+            file_path = os.path.abspath(self._rhapi.db.option("pilot-csv-importer-location"))
         if os.path.isfile(file_path):
             heats = defaultdict(list)
             with open(file_path, mode="r", encoding="utf-8") as csvfile:
@@ -81,7 +116,7 @@ class PilotCSVImporter:
 
             # Create heats and associate them with the race class and format
             for heat, pilot_ids in heats.items():
-                heat_name = self._rhapi.__("Heat") + heat
+                heat_name = self._rhapi.__("Heat ") + heat
                 new_heat = self._rhapi.db.heat_add(name=heat_name)
                 
                 # Associate the heat with the race class and format
