@@ -34,6 +34,7 @@ class PilotCSVImporter:
             name="pilot-csv-importer-type",
             label=self._rhapi.__("Type of Import"),
             field_type=UIFieldType.SELECT,
+            value=0,
             options=[
                 UIFieldSelectOption(0, "From File"),
                 UIFieldSelectOption(1, "From ifpv.co.uk"),
@@ -58,7 +59,7 @@ class PilotCSVImporter:
         self.download_csv("https://www.ifpv.co.uk/events/" + event_id + "/rh")
     
     def download_csv(self, url):
-        download_location = "./plugins/pilot_csv_importer/downloaded/piots.csv"
+        download_location = "./plugins/pilot_csv_importer/downloaded/pilots.csv"
 
         if os.path.isfile(download_location):
             os.remove(download_location)
@@ -71,10 +72,10 @@ class PilotCSVImporter:
     def import_pilot(self, args):
         if self._rhapi.db.option("pilot-csv-importer-type") == "1": # ifpv
             self.ifpv_download(self._rhapi.db.option("pilot-csv-importer-location"))
-            file_path = "./plugins/pilot_csv_importer/downloaded/piots.csv"
+            file_path = "./plugins/pilot_csv_importer/downloaded/pilots.csv"
         elif self._rhapi.db.option("pilot-csv-importer-type") == "2": # url
             self.download_csv(self._rhapi.db.option("pilot-csv-importer-location"))
-            file_path = "./plugins/pilot_csv_importer/downloaded/piots.csv"
+            file_path = "./plugins/pilot_csv_importer/downloaded/pilots.csv"
         else:
             file_path = os.path.abspath(self._rhapi.db.option("pilot-csv-importer-location"))
         if os.path.isfile(file_path):
