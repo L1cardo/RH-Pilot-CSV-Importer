@@ -34,11 +34,11 @@ class PilotCSVImporter:
             name="pilot-csv-importer-type",
             label=self._rhapi.__("Type of Import"),
             field_type=UIFieldType.SELECT,
-            value="from_file",
+            value=0,
             options=[
-                UIFieldSelectOption("from_file", "From File"),
-                UIFieldSelectOption("from_ifpv", "From ifpv.co.uk"),
-                UIFieldSelectOption("from_ulr", "From URL"),
+                UIFieldSelectOption(0, "From File"),
+                UIFieldSelectOption(1, "From ifpv.co.uk"),
+                UIFieldSelectOption(2, "From URL"),
             ],
         )
         pilot_csv_importer_location = UIField(
