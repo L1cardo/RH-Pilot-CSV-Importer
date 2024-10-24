@@ -1,7 +1,7 @@
 import csv
 import os
 import logging
-import urllib.request
+import requests
 from eventmanager import Evt
 from RHUI import UIField, UIFieldType, UIFieldSelectOption
 from Database import ProgramMethod
@@ -65,7 +65,9 @@ class PilotCSVImporter:
             self.logger.info("Deleted: " + download_location)
 
         self.logger.info("Attempting to download: " + url)
-        download_result = urllib.request.urlretrieve(url, download_location)
+        download_result = requests.get(url)  
+        with open(download_location, 'wb') as f:
+            f.write(download_result.content)
         self.logger.info("Downloaded: " + str(download_result))
 
     def import_pilot(self, args):
