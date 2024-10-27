@@ -97,7 +97,12 @@ class PilotCSVImporter:
                         self.logger.info(f"Pilot alredy exists: {pilot['name']} - {pilot['callsign']}")
 
                     pilot_id = self.get_pilot_id(pilot)
-                    heats[pilot_heat].append(pilot_id)
+                    if pilot_heat != "":
+                        if len(heats[pilot_heat]) < len(self._rhapi.interface.seats):
+                            heats[pilot_heat].append(pilot_id)
+                        else:
+                           self._rhapi.ui.message_alert("Insufficient nodes to add " + pilot_name) 
+                           self.logger.warning("Insufficient nodes to add " + pilot_name) 
                         
             self._rhapi.ui.broadcast_pilots()
             self.logger.info("Import complete, generating heats...")
