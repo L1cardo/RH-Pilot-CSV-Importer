@@ -1,7 +1,7 @@
 import csv
 import os
 import logging
-import urllib.request
+import requests
 from eventmanager import Evt
 from RHUI import UIField, UIFieldType, UIFieldSelectOption
 from Database import ProgramMethod
@@ -34,11 +34,11 @@ class PilotCSVImporter:
             name="pilot-csv-importer-type",
             label=self._rhapi.__("Type of Import"),
             field_type=UIFieldType.SELECT,
-            value="from_file",
+            value=0,
             options=[
-                UIFieldSelectOption("from_file", "From File"),
-                UIFieldSelectOption("from_ifpv", "From ifpv.co.uk"),
-                UIFieldSelectOption("from_ulr", "From URL"),
+                UIFieldSelectOption(0, "From File"),
+                UIFieldSelectOption(1, "From ifpv.co.uk"),
+                UIFieldSelectOption(2, "From URL"),
             ],
         )
         pilot_csv_importer_location = UIField(
@@ -66,7 +66,9 @@ class PilotCSVImporter:
             self.logger.info("Deleted: " + download_location)
 
         self.logger.info("Attempting to download: " + url)
-        download_result = urllib.request.urlretrieve(url, download_location)
+        download_result = requests.get(url)  
+        with open(download_location, 'wb') as f:
+            f.write(download_result.content)
         self.logger.info("Downloaded: " + str(download_result))
 
     def import_pilot(self, args):
@@ -95,7 +97,12 @@ class PilotCSVImporter:
                         self.logger.info(f"Pilot alredy exists: {pilot['name']} - {pilot['callsign']}")
 
                     pilot_id = self.get_pilot_id(pilot)
-                    heats[pilot_heat].append(pilot_id)
+                    if pilot_heat != "":
+                        if len(heats[pilot_heat]) < len(self._rhapi.interface.seats):
+                            heats[pilot_heat].append(pilot_id)
+                        else:
+                           self._rhapi.ui.message_alert("Insufficient nodes to add " + pilot_name) 
+                           self.logger.warning("Insufficient nodes to add " + pilot_name) 
                         
             self._rhapi.ui.broadcast_pilots()
             self.logger.info("Import complete, generating heats...")

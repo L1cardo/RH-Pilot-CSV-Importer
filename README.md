@@ -4,7 +4,7 @@ This plugin allows you to import pilots and generate heats from a CSV file in Ro
 
 ## Features
 
-- Import pilots from a CSV file
+- Import pilots from a CSV file locally, from a website address or from IFPV
 - Automatically create a race class
 - Generate heats based on the imported data
 - Assign pilots to appropriate heats
@@ -34,8 +34,9 @@ sudo systemctl restart rotorhazard.service
 
 1. Navigate to the "Pilot CSV Importer" panel in the Format page.
 2. Set the desired class name (default is `Imported Class`).
-3. Specify the path to your CSV file (default is `~/RotorHazard/src/server/static/user/pilots.csv`).
-4. Click the "Import" button to start the import process.
+3. Select the type of import (From File, From ifpv.co.uk, from URL)
+4. Specify the path to your CSV file (default is `~/RotorHazard/src/server/static/user/pilots.csv`) or website address or IFPV event ID (found in IFPV URL).
+5. Click the "Import" button to start the import process.
 
 ## CSV File Format
 
