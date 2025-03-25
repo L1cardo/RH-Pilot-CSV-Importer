@@ -1,6 +1,14 @@
-# Pilot CSV Importer Plugin for RotorHazard
+#
+<h1 align="center">Pilot CSV Importer Plugin for RotorHazard</h1>
+<h3 align="center">This plugin allows you to import pilots and generate heats from a CSV file in RotorHazard.<br>
+  <a href="./README_CN.md">[🇨🇳中文]</a><br>
+</h3>
 
-This plugin allows you to import pilots and generate heats from a CSV file in RotorHazard.
+<p align="center">
+  <a href="https://github.com/L1cardo/RH-Pilot-CSV-Importer/actions/workflows/rhfest.yml">
+    <img src="https://github.com/L1cardo/RH-Pilot-CSV-Importer/actions/workflows/rhfest.yml/badge.svg" alt="RHFest">
+  </a>
+</p>
 
 ## Features
 
