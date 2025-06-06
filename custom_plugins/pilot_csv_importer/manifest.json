@@ -8,7 +8,6 @@
     "description": "Import Pilots from local CSV file, website URL or ifpv.co.uk",
     "documentation_uri": "https://github.com/L1cardo/RH-Pilot-CSV-Importer",
     "required_rhapi_version": "1.0",
-    "version": "1.1.2",
-    "category": ["Race Management"],
+    "version": "1.1.3",
     "zip_filename": "pilot_csv_importer.zip"
 }
