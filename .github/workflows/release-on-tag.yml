@@ -1,0 +1,48 @@
+name: Release on Tag
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate with RHFest
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⤵️ Check out code from GitHub
+        uses: actions/checkout@v5
+
+      - name: 🚀 Run RHFest validation
+        uses: docker://ghcr.io/rotorhazard/rhfest-action:latest
+
+  release:
+    name: Create Release
+    needs: validate
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: ⤵️ Check out code from GitHub
+        uses: actions/checkout@v5
+
+      - name: 📦 Create ZIP archive
+        run: |
+          cd custom_plugins && zip -r ../pilot_csv_importer.zip pilot_csv_importer
+
+      - name: Get Previous tag
+        id: previoustag
+        uses: amitsingh-007/next-release-tag@v6.3.0
+
+      - name: 📝 Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          body: |
+            ${{ github.event.head_commit.message }}
+
+            **Full Changelog**: https://github.com/L1cardo/RH-Pilot-CSV-Importer/compare/${{ steps.previoustag.outputs.prev_release_tag }}...${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          files: pilot_csv_importer.zip
