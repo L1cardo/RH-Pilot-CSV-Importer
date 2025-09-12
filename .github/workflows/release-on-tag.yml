@@ -67,6 +67,5 @@ jobs:
 
             **Full Changelog**: https://github.com/L1cardo/RH-Pilot-CSV-Importer/compare/${{ steps.get-tag.outputs.previous_tag }}...${{ steps.get-tag.outputs.current_tag }}
           draft: false
-          draft: false
           prerelease: false
           files: pilot_csv_importer.zip
